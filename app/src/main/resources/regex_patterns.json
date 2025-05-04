@@ -1,0 +1,25 @@
+[
+    {
+        "patterns": [
+            "^0|0$",
+            "^a|a$"
+        ],
+        "result": "a0"
+    },
+    {
+        "patterns": [
+            "^B|B$",
+            "^b|b$"
+        ],
+        "result": "bb"
+    },
+    {
+        "patterns": [
+            "^C|C$",
+            "^a|a$",
+            "^b|b$",
+            "^c|c$"
+        ],
+        "result": "c0"
+    }
+]

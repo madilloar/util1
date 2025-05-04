@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.Mapper">
+  <!-- Userエンティティにマッピング -->
+  <select id="selectAllUsers" resultType="org.example.User"> SELECT * FROM users; </select>
+  <!-- Mapにマッピング -->
+  <select id="selectAllUsersAsMap" resultType="map">SELECT * FROM users;</select>
+
+
+  <!--日本語ビュー-->
+  <select id="selectAllFromUserView" resultType="map"> SELECT * FROM user_view; </select>
+
+  <!--日本語ビュー-->
+  <select id="selectAllFromCommonCodeView" resultType="map"> SELECT * FROM V_COMMON_CODE; </select>
+
+
+  <!-- トランザクションテーブルからすべてのデータを取得 -->
+  <select id="selectAllTransactions" resultType="map"> SELECT * FROM T_TRANSACTION; </select>
+
+  <!-- カラムフィルタテーブルからすべてのカラム名を取得 -->
+  <select id="selectColumnFilters" resultType="string"> SELECT COLUMN_NAME FROM T_COLUMNS_FILTER; </select>
+
+  <!-- グループ化マスタを取得 -->
+  <select id="selectGroupMaster" resultType="map"> SELECT ITEM1, GROUP_NAME FROM T_GROUP_MASTER; </select>
+</mapper>

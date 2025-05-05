@@ -356,6 +356,95 @@ public class UtilTest {
   }
 
   @Test
+  public void testProcessTransactions3() {
+    // サンプルの valuePairs
+    Map<String, String> valuePairs = Map.of(
+        "ITEM2", "STAT-ITEM2");
+
+    // サンプルの conditions（transformValues用）
+    String[] transformConditions = new String[] { "1|3", "@" };
+
+    // サンプルの conditions（clearValuesByConditions用）
+    Map<String, String> clearConditions = Map.of(
+        "ITEM1", "^A.*", // ITEM1が"A"で始まる場合
+        "ITEM2", "^va.+$" // ITEM2が"va"で始まり1文字以上続く場合
+    );
+
+    // グループ化マスタ
+    Map<String, String> groupMaster = Map.of(
+        "A1", "GROUP-A",
+        "A2", "GROUP-A",
+        "A3", "GROUP-A",
+        "B3", "GROUP-B",
+        "B45", "GROUP-B");
+
+    // フィルタセット
+    Set<String> filterSet = Set.of("ID", "ITEM1", "ITEM2", "GROUP");
+
+    // カラム順序
+    List<String> columnOrder = List.of("ID", "ITEM1", "ITEM2", "GROUP");
+
+    // トランザクションデータ
+    List<Map<String, String>> transactions = List.of(
+        Map.of("ID", "1", "ITEM1", "A1 ", "ITEM2", "value2", "STAT-ITEM2", "3"),
+        Map.of("ID", "2", "ITEM1", "A4", "ITEM2", "value5", "STAT-ITEM2", "1"),
+        Map.of("ID", "3", "ITEM1", "B3", "ITEM2", " v8 ", "STAT-ITEM2", "A"));
+
+    // 関数を適用
+    List<String> result = transactions.stream()
+        // 各カラムのスペースをトリム
+        .map(Util.trimSpacesFromColumns)
+        // 値と状態のペアで変換
+        .map(Util.transformValues
+            .apply(valuePairs)
+            .apply(transformConditions))
+        // 条件に基づいて値を空文字列に置き換える
+        .map(Util.clearValuesByConditions.apply(clearConditions))
+        // GROUP列を追加
+        .map(Util.addGroupColumn.apply(groupMaster))
+        // 列をフィルタ
+        .map(Util.filterRecordByColumns.apply(filterSet))
+        // カンマ区切りの文字列に変換
+        .map(Util.convertToCommaSeparatedRecord.apply(columnOrder))
+        .collect(Collectors.toList());
+
+    // 検証
+    assertEquals(3, result.size());
+    assertEquals("\"1\",\"\",\"@\",\"\"", result.get(0)); // レコード1
+    assertEquals("\"2\",\"\",\"@\",\"\"", result.get(1)); // レコード2
+    assertEquals("\"3\",\"B3\",\" v8\",\"GROUP-B\"", result.get(2)); // レコード3
+  }
+
+  @Test
+  public void testClearValuesByConditions() {
+    Map<String, String> conditions = Map.of(
+        "ITEM1", "^a.*",
+        "ITEM2", "^va.+$");
+
+    List<Map<String, String>> transactions = List.of(
+        Map.of("ITEM1", "apple", "ITEM2", "value2", "ITEM3", "other"),
+        Map.of("ITEM1", "banana", "ITEM2", "valid", "ITEM3", "other"),
+        Map.of("ITEM1", "avocado", "ITEM2", "value", "ITEM3", "other"));
+
+    List<Map<String, String>> result = transactions.stream()
+        .map(Util.clearValuesByConditions.apply(conditions))
+        .collect(Collectors.toList());
+
+    // 検証
+    assertEquals("", result.get(0).get("ITEM1"));
+    assertEquals("", result.get(0).get("ITEM2"));
+    assertEquals("other", result.get(0).get("ITEM3"));
+
+    assertEquals("banana", result.get(1).get("ITEM1"));
+    assertEquals("", result.get(1).get("ITEM2"));
+    assertEquals("other", result.get(1).get("ITEM3"));
+
+    assertEquals("", result.get(2).get("ITEM1"));
+    assertEquals("", result.get(2).get("ITEM2"));
+    assertEquals("other", result.get(2).get("ITEM3"));
+  }
+
+  @Test
   public void testSha256Hash() {
     String input = "test";
     String expectedHash = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";

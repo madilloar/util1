@@ -1,22 +1,16 @@
 {
-    "valuePairs": [
-        {
-            "item": "項目A",
-            "state": "状態-項目A"
-        },
-        {
-            "item": "項目B",
-            "state": "状態-項目B"
-        },
-        {
-            "item": "項目C",
-            "state": "状態-項目C"
-        }
-    ],
-    "conditions": [
-        {
-            "pattern": "1|3",
-            "replacement": "@"
-        }
-    ]
+  "valuePairs": [
+    {
+      "item": "項目A",
+      "state": "状態-項目A"
+    },
+    {
+      "item": "項目B",
+      "state": "状態-項目B"
+    }
+  ],
+  "condition": {
+    "pattern": "1|3",
+    "replacement": "@"
+  }
 }

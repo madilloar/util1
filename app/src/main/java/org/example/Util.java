@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Util {
   /**
@@ -59,6 +58,36 @@ public class Util {
   };
 
   /**
+   * 条件に基づいて値を空文字列に置き換える関数.
+   * 
+   * @param conditions 条件 (例: {"ITEM1": "^[0-9]+$","ITEM2":"^a$"...})
+   * @return 変換後のレコード
+   * @param record トランザクションレコード
+   * @return 条件に基づいて値を空文字列に置き換えたレコード
+   */
+  public static final Function<Map<String, String>, Function<Map<String, String>, Map<String, String>>> clearValuesByConditions = conditions -> record -> {
+    return record.entrySet().stream()
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            entry -> {
+              String columnName = entry.getKey();
+              String columnValue = entry.getValue();
+
+              // conditionsに項目名が含まれている場合のみチェック
+              if (conditions.containsKey(columnName)) {
+                String pattern = conditions.get(columnName);
+
+                // 正規表現にマッチした場合、値を空文字列に置き換える
+                if (columnValue != null && columnValue.matches(pattern)) {
+                  return "";
+                }
+              }
+
+              // 条件に一致しない場合は元の値をそのまま返す
+              return columnValue;
+            }));
+  };
+  /**
    * グループ化マスタを追加する関数.
    * 
    * @param groupMaster グループ化マスタ
@@ -90,7 +119,7 @@ public class Util {
    * @param record    トランザクションレコード
    * @return 必要な列だけを残したトランザクションレコード
    */
-  public static Function<Set<String>, Function<Map<String, String>, Map<String, String>>> filterRecordByColumns = filterSet -> record -> record
+  public static final Function<Set<String>, Function<Map<String, String>, Map<String, String>>> filterRecordByColumns = filterSet -> record -> record
       .entrySet().stream().filter(entry -> filterSet.contains(entry.getKey())) // フィルタセットに含まれるキーのみ
       .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)); // 結果をMapに収集
 

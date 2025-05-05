@@ -1,33 +1,37 @@
 # util1
 
-`util1` is a utility library designed to simplify common tasks in your projects.
+このプロジェクトはGradleを使用して構築されたJavaユーティリティプロジェクトです。
 
-## Features
+## 必要条件
 
-- Lightweight and easy to use.
-- Provides reusable utility functions.
-- Well-documented and tested.
+- Java 11以上
+- Gradle 7.x以上
 
-## Installation
+## ビルドと実行
 
+### プロジェクトのビルド
+プロジェクトをビルドするには、以下を実行してください:
 ```bash
-npm install util1
+./gradlew build
 ```
 
-## Usage
-
-```javascript
-const util1 = require('util1');
-
-// Example usage
-const result = util1.someFunction();
-console.log(result);
+### アプリケーションの実行
+アプリケーションを実行するには、以下を使用してください:
+```bash
+./gradlew run
 ```
 
-## Contributing
+### ビルドのクリーン
+ビルドディレクトリをクリーンにするには、以下を実行してください:
+```bash
+./gradlew clean
+```
 
-Contributions are welcome! Please follow the [contribution guidelines](CONTRIBUTING.md).
+## テスト
+テストを実行するには、以下を使用してください:
+```bash
+./gradlew test
+```
 
-## License
-
-This project is licensed under the [MIT License](LICENSE).
+## ライセンス
+このプロジェクトはMITライセンスの下でライセンスされています。詳細は`LICENSE`ファイルを参照してください。

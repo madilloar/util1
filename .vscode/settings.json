@@ -1,3 +1,11 @@
 {
-    "java.debug.settings.onBuildFailureProceed": true
+  "java.jdt.ls.java.home": "/usr/lib/jvm/java-17-openjdk-amd64",
+  "java.format.enabled": true,
+  "java.format.comments.enabled": true,
+  "java.format.settings.url": ".vscode/eclipse-java-google-style",
+  "java.format.settings.profile": "GoogleStyle",
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.formatOnSave": true,
+  "java.configuration.updateBuildConfiguration": "automatic",
 }

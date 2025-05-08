@@ -1,0 +1,7 @@
+-- トランザクションテーブル
+INSERT INTO T_TRANSACTION (ID, ITEM1, ITEM2, ITEM3)
+VALUES ('1', 'A1', 'value2', 'value3');
+INSERT INTO T_TRANSACTION (ID, ITEM1, ITEM2, ITEM3)
+VALUES ('2', 'A4', 'value5', 'value6');
+INSERT INTO T_TRANSACTION (ID, ITEM1, ITEM2, ITEM3)
+VALUES ('3', 'B7', 'value8', 'value9');

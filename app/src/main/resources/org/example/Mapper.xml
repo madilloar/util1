@@ -22,4 +22,13 @@
 
   <!-- グループ化マスタを取得 -->
   <select id="selectGroupMaster" resultType="map"> SELECT ITEM1, GROUP_NAME FROM T_GROUP_MASTER; </select>
+
+
+  <!-- 複数条件での検索 -->
+  <select id="findTransactionByConditions" resultType="map"> SELECT * FROM T_TRANSACTION<where>
+      <foreach collection="conditions" item="condition" separator="AND">
+        <if test="condition.searchExpression != null"> ${condition.searchExpression} </if>
+      </foreach>
+    </where>
+  </select>
 </mapper>

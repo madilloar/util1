@@ -1,9 +1,10 @@
 package org.example;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,6 +70,8 @@ public class MyBatisTest {
     switch (testName) {
       case "testProcessTransactions":
         return "data_case1.sql";
+      case "testFindTransactionByConditions":
+        return "data_case2.sql";
       default:
         return null; // デフォルトではデータファイルを使用しない
     }
@@ -186,4 +189,33 @@ public class MyBatisTest {
     }
   }
 
+  /**
+   * 条件に基づいてトランザクションを検索する
+   * <foreach collection="conditions" item="condition" separator="AND">のテスト
+   */
+  @Test
+  public void testFindTransactionByConditions() {
+    try (SqlSession session = sqlSessionFactory.openSession()) {
+      List<Map<String, String>> conditions = new ArrayList<>();
+      conditions.add(Map.of("searchExpression", "ITEM1 LIKE 'A%'"));
+      conditions.add(Map.of("searchExpression", "ITEM2 LIKE 'value%'"));
+      // <foreach collection="conditions" item="condition"
+      // separator="AND">の「collection="conditions"」が期待している
+      // "conditions" というキーのMapで渡す
+      List<Map<String, String>> records = session.selectList("org.example.Mapper.findTransactionByConditions",
+          Map.of("conditions", conditions));
+
+      List<String> columnOrder = List.of("ID", "ITEM1", "ITEM2", "ITEM3", "ITEM4", "ITEM5", "ITEM6");
+      records.stream().forEach(record -> {
+        System.out.print("{");
+
+        String jsonContent = columnOrder.stream()
+            .map(key -> "\"" + key + "\":\"" + record.getOrDefault(key, "") + "\"")
+            .collect(Collectors.joining(", "));
+
+        System.out.print(jsonContent);
+        System.out.println("}");
+      });
+    }
+  }
 }

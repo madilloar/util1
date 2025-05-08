@@ -27,7 +27,8 @@
   <!-- 複数条件での検索 -->
   <select id="findTransactionByConditions" resultType="map"> SELECT * FROM T_TRANSACTION<where>
       <foreach collection="conditions" item="condition" separator="AND">
-        <if test="condition.searchExpression != null"> ${condition.searchExpression} </if>
+        <if test="condition.columnName != null and condition.value != null"> ${condition.columnName}
+    LIKE #{condition.value} </if>
       </foreach>
     </where>
   </select>

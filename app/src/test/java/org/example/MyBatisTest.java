@@ -197,11 +197,17 @@ public class MyBatisTest {
   public void testFindTransactionByConditions() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       List<Map<String, String>> conditions = new ArrayList<>();
-      conditions.add(Map.of("searchExpression", "ITEM1 LIKE 'A%'"));
-      conditions.add(Map.of("searchExpression", "ITEM2 LIKE 'value%'"));
-      // <foreach collection="conditions" item="condition"
-      // separator="AND">の「collection="conditions"」が期待している
-      // "conditions" というキーのMapで渡す
+      // "columnName" は固定値としてセットし、"value" にLIKE用の値をバインド変数として渡します。
+      // これは、バインド変数として渡すことでSQLインジェクションを防ぐためです。
+      // 「conditions.add(Map.of("columnName", "ITEM1", "value", "A%"));」
+      // の「"columnName"」は、
+      // <if test="condition.columnName != null and condition.value != null">
+      // ${condition.columnName} LIKE #{condition.value} </if>
+      // の「"condition.columnName"」に対応しています。「"condition.value"」も同様です。
+      conditions.add(Map.of("columnName", "ITEM1", "value", "A%"));
+      conditions.add(Map.of("columnName", "ITEM2", "value", "value%"));
+      // 「Map.of("conditions"」の「"conditions"」は「Mapper.xml」の「<foreach
+      // collection="conditions"」の「"conditions"」部分に対応
       List<Map<String, String>> records = session.selectList("org.example.Mapper.findTransactionByConditions",
           Map.of("conditions", conditions));
 

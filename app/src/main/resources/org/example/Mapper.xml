@@ -6,6 +6,15 @@
   <!-- Mapにマッピング -->
   <select id="selectAllUsersAsMap" resultType="map">SELECT * FROM users;</select>
 
+  <!-- ありえなないカラムでSELECTして例外を発生させる -->
+  <select id="selectImpossibleColumn" resultType="map">SELECT * FROM users <where>
+      <foreach collection="conditions" item="condition" separator="AND">
+        <if test="condition.columnName != null and condition.value != null"> ${condition.columnName}
+    LIKE #{condition.value} </if>
+      </foreach>
+    </where>
+  </select>
+
 
   <!--日本語ビュー-->
   <select id="selectAllFromUserView" resultType="map"> SELECT * FROM user_view; </select>

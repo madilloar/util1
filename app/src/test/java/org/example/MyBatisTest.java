@@ -5,9 +5,12 @@ import static org.junit.Assert.assertEquals;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.ibatis.io.Resources;
@@ -99,6 +102,43 @@ public class MyBatisTest {
       assertEquals(3, users.size());
       assertEquals("Alice", users.get(0).get("USER_NAME")); // カラム名は大文字で返されることが多い
     }
+  }
+
+  /**
+   * SQLで例外が発生した場合、Optional.empty()を返すようにする
+   */
+  @Test
+  public void testWrrapException() {
+    Function<List<Map<String, String>>, Optional<List<Map<String, String>>>> selectImpossibleColumn = (conditions) -> {
+      try (SqlSession session = sqlSessionFactory.openSession()) {
+        return Optional
+            .of(session.selectList("org.example.Mapper.selectImpossibleColumn", Map.of("conditions", conditions)));
+      } catch (Exception e) {
+        // e.printStackTrace();
+        return Optional.empty();
+      }
+    };
+
+    // 見つからないケース。ITEM1などというカラムはないため、例外が発生するが、
+    // Optionalでくるんでいるので、Optional.empty()が返される。
+    List<Map<String, String>> errorConditions = new ArrayList<>();
+    errorConditions.add(Map.of("columnName", "ITEM1", "value", "A%"));
+    selectImpossibleColumn.apply(errorConditions)
+        .orElseGet(() -> {
+          System.out.println("ユーザーが見つかりません");
+          return Collections.emptyList();
+        }).forEach(user -> System.out.println(user.get("USER_NAME")));
+
+    // 見つかるケース。USER_NAMEなどというカラムはあるため、Optionalでくるんでいるので、
+    // Optional.empty()は返されない。
+    List<Map<String, String>> conditions = new ArrayList<>();
+    conditions.add(Map.of("columnName", "USER_NAME", "value", "A%"));
+    selectImpossibleColumn.apply(conditions)
+        .orElseGet(() -> {
+          System.out.println("ユーザーが見つかりません");
+          return Collections.emptyList();
+        }).forEach(user -> System.out.println(user.get("USER_NAME")));
+
   }
 
   /**
